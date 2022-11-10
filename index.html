@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Athlesia | Cricket</title>
+    <script defer type="module" src="/main.js"></script>
+  </head>
+  <body>
+    <h1>Athlesia | Cricket</h1>
+    <div class="current-team">
+      <span>Current Team : </span>
+      <select name="currentTeamSelector" id="currentTeamSelector"></select>
+      <hr />
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <span id="battingTeam">Batting: Red</span>
+        <button id="swapTeam">
+          <img
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1024px' height='1024px' viewBox='0 0 1024 1024' class='icon'%3E%3Cpath d='M847.9 592H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h605.2L612.9 851c-4.1 5.2-.4 13 6.3 13h72.5c4.9 0 9.5-2.2 12.6-6.1l168.8-214.1c16.5-21 1.6-51.8-25.2-51.8zM872 356H266.8l144.3-183c4.1-5.2.4-13-6.3-13h-72.5c-4.9 0-9.5 2.2-12.6 6.1L150.9 380.2c-16.5 21-1.6 51.8 25.1 51.8h696c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z'/%3E%3C/svg%3E"
+            alt=""
+          />
+        </button>
+        <span id="ballingTeam">Balling: Blue</span>
+      </div>
+      <hr />
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          align-items: center;
+        "
+      >
+        <span id="runs">Runs: 0</span>
+        <button class="run-button" data-value="1">1</button>
+        <button class="run-button" data-value="2">2</button>
+        <button class="run-button" data-value="4">4</button>
+        <button class="run-button" data-value="6">6</button>
+        <input id="runInput" value="0" placeholder="Enter run" />
+      </div>
+      <hr />
+      <div style="display: flex; gap: 1em">
+        <button style="flex: 1" id="ball">Ball</button>
+        <button style="flex: 1" id="wideButton">Wide</button>
+        <button style="flex: 1" id="freeHit">Free hit</button>
+      </div>
+      <hr />
+      <div style="display: flex; gap: 1em">
+        <button style="flex: 1" class="out-button">Stump</button>
+        <button style="flex: 1" class="out-button">Caught out</button>
+      </div>
+      <hr />
+      <div style="display: flex; justify-content: space-between">
+        <div>Wickets: <span id="wickets">0</span></div>
+        <div>Overs: <span id="overs">0</span></div>
+      </div>
+      <hr />
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <label for="striker">Striker: </label
+        ><select id="striker"></select>
+        <button id="swapStriker">
+          <img
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1024px' height='1024px' viewBox='0 0 1024 1024' class='icon'%3E%3Cpath d='M847.9 592H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h605.2L612.9 851c-4.1 5.2-.4 13 6.3 13h72.5c4.9 0 9.5-2.2 12.6-6.1l168.8-214.1c16.5-21 1.6-51.8-25.2-51.8zM872 356H266.8l144.3-183c4.1-5.2.4-13-6.3-13h-72.5c-4.9 0-9.5 2.2-12.6 6.1L150.9 380.2c-16.5 21-1.6 51.8 25.1 51.8h696c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z'/%3E%3C/svg%3E"
+            alt=""
+          />
+        </button>
+        <label for="non-striker">Non striker: </label
+        ><select id="nonStriker"></select>
+      </div>
+      <hr />
+      <label for="ballerSelect">Baller: </label
+      ><select id="ballerSelect"></select>
+      <hr />
+    </div>
+    <button style="width: 80%; max-width: 500px; margin-top: 1em" id="reset">
+      Reset
+    </button>
+  </body>
+</html>

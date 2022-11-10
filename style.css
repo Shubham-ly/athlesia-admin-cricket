@@ -1,0 +1,51 @@
+body {
+  min-height: 100vh;
+  background: rgb(37, 37, 37);
+  background: linear-gradient(
+    180deg,
+    rgba(37, 37, 37, 1) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  background-repeat: no-repeat;
+  color: white;
+  font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1em;
+  align-items: center;
+}
+button {
+  padding: 0.6em 1em;
+  border-radius: 0.4em;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  cursor: pointer;
+}
+button:has(img) {
+  border: none;
+  outline: none;
+  padding: 0.4em;
+  border-radius: 0.3em;
+}
+button img {
+  width: 32px;
+}
+select,
+option {
+  font-size: 1rem;
+}
+input {
+  padding: 0.6em 1em;
+  font-size: 1rem;
+}
+h1 {
+  font-size: 2rem;
+}
+#runInput {
+  margin-block: 1em;
+  width: 100%;
+}
+hr {
+  opacity: 0.4;
+}
