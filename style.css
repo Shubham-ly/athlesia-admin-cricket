@@ -49,3 +49,25 @@ h1 {
 hr {
   opacity: 0.4;
 }
+
+.ball {
+  background-color: white;
+  border-radius: 100px;
+  color: black;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 2px;
+  cursor: pointer;
+}
+#overContainer input {
+  font-size: 14px;
+}
+
+#overContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}

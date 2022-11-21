@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Athlesia | Cricket</title>
     <script defer type="module" src="/main.js"></script>
+    <!-- <script defer type="module" src="/automate.js"></script> -->
   </head>
   <body>
     <h1>Athlesia | Cricket</h1>
     <div class="current-team">
-      <span>Current Team : </span>
+      <span>Current Game : </span>
       <select name="currentTeamSelector" id="currentTeamSelector"></select>
       <hr />
       <div
@@ -39,28 +40,34 @@
         "
       >
         <span id="runs">Runs: 0</span>
+        <button id="ball">0</button>
         <button class="run-button" data-value="1">1</button>
         <button class="run-button" data-value="2">2</button>
+        <button class="run-button" data-value="3">3</button>
         <button class="run-button" data-value="4">4</button>
         <button class="run-button" data-value="6">6</button>
         <input id="runInput" value="0" placeholder="Enter run" />
       </div>
       <hr />
       <div style="display: flex; gap: 1em">
-        <button style="flex: 1" id="ball">Ball</button>
-        <button style="flex: 1" id="wideButton">Wide</button>
-        <button style="flex: 1" id="freeHit">Free hit</button>
+        <button style="flex: 1" id="wideButton">WD</button>
+        <button style="flex: 1" id="noBall">NB</button>
+        <button style="flex: 1" id="freeHit">FH</button>
       </div>
       <hr />
       <div style="display: flex; gap: 1em">
-        <button style="flex: 1" class="out-button">Stump</button>
-        <button style="flex: 1" class="out-button">Caught out</button>
+        <button style="flex: 1" class="out-button">W</button>
       </div>
       <hr />
       <div style="display: flex; justify-content: space-between">
         <div>Wickets: <span id="wickets">0</span></div>
-        <div>Overs: <span id="overs">0</span></div>
+        <div>Overs: <span id="overs">0.1</span></div>
       </div>
+      <hr />
+      <div id="overContainer"></div>
+      <template id="ballContainer">
+        <div style="display: flex; gap: 1em"></div>
+      </template>
       <hr />
       <div>
         <label for="striker">Striker: </label
