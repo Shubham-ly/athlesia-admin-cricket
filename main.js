@@ -1,7 +1,14 @@
 import "./style.css";
 
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, child, get, update } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  child,
+  get,
+  update,
+  onValue,
+} from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAgk53Y3_zhKH0UWZdC7Kan9mMHgvviXhw",
@@ -155,9 +162,11 @@ function updateCurrentBatters(s, ns) {
 function updateOvers() {
   const currentGameData = gameData[currentTeamSelector.value];
   const oversData = currentGameData[`${currentGameData.batting_team}_over`];
-  overs.innerHTML = `${oversData.length - 1}.${
-    oversData[oversData.length - 1].length
-  }`;
+  if (oversData.length)
+    overs.innerHTML = `${oversData.length - 1}.${
+      oversData[oversData.length - 1].length
+    }`;
+  else overs.innerHTML = "0.1";
 }
 
 function changeStrikerRun(run) {
@@ -272,36 +281,42 @@ function onCurrentTeamChange(e) {
   updateBallers(data[data.balling_team]);
   updateStrikers(data[data.batting_team]);
   updateRuns(data[`${data.batting_team}_runs`]);
-  const oversData = data[`${data.batting_team}_over`];
-  const currentOver = oversData?.length ? oversData.length - 1 : 0;
+  const overData = data[`${data.batting_team}_over`];
+  const currentOver = overData?.length ? overData.length - 1 : 0;
 
   const overTemplate = document.querySelector("#ballContainer");
-  overContainer.innerHTML = "";
-  oversData?.forEach((over, currentOverIndex) => {
-    const o = overTemplate.content.cloneNode({ deep: true });
-    over?.forEach((ballData, currentBallIndex) => {
-      const ball = document.createElement("span");
-      const ballInput = document.createElement("input");
-      ball.addEventListener("click", onOverBallClicked);
-      ball.className = "ball";
-      ballInput.addEventListener("change", onBallInputChange);
-      ballInput.addEventListener("blur", (e) => {
-        e.currentTarget.style.display = "none";
-        e.currentTarget.previousElementSibling.style.display = "grid";
+  onValue(
+    ref(db, `cricket/${currentTeamSelector.value}/${data.batting_team}_over`),
+    (snapshot) => {
+      overContainer.innerHTML = "";
+      const overData = snapshot.val();
+      overData?.forEach((over, currentOverIndex) => {
+        const o = overTemplate.content.cloneNode({ deep: true });
+        over?.forEach((ballData, currentBallIndex) => {
+          const ball = document.createElement("span");
+          const ballInput = document.createElement("input");
+          ball.addEventListener("click", onOverBallClicked);
+          ball.className = "ball";
+          ballInput.addEventListener("change", onBallInputChange);
+          ballInput.addEventListener("blur", (e) => {
+            e.currentTarget.style.display = "none";
+            e.currentTarget.previousElementSibling.style.display = "grid";
+          });
+          ballInput.value = ballData;
+          ballInput.style.display = "none";
+          ballInput.setAttribute("data-over", currentOverIndex);
+          ballInput.setAttribute("data-ball", currentBallIndex);
+          ball.innerHTML = ballData;
+          o.querySelector("div").append(ball, ballInput);
+        });
+        overContainer.appendChild(o);
       });
-      ballInput.value = ballData;
-      ballInput.style.display = "none";
-      ballInput.setAttribute("data-over", currentOverIndex);
-      ballInput.setAttribute("data-ball", currentBallIndex);
-      ball.innerHTML = ballData;
-      o.querySelector("div").append(ball, ballInput);
-    });
-    overContainer.appendChild(o);
-  });
+    }
+  );
 
   currentBallIndex =
-    oversData && oversData[currentOver].length
-      ? `${currentOver}.${oversData[currentOver].length - 1}`
+    overData && overData[currentOver].length
+      ? `${currentOver}.${overData[currentOver].length - 1}`
       : 0;
   update(ref(db, `cricket_update`), {
     current_game: currentTeamSelector.value,
@@ -385,22 +400,35 @@ function showFlashMessage(message, timeout = 3000) {
   }, timeout);
 }
 
-// reset.addEventListener("dblclick", () => {
-//   get(child(dbRef, `cricket/${currentTeamSelector.value}`)).then((data) => {
-//     const d = data.val();
-//     const battingTeam = d.batting_team;
-//     const ballingTeam = d.balling_team;
-//     const resetData = {
-//       overs: 0,
-//       balls: Array.from(Array(6)).map(() => 0),
-//     };
-//     resetData[`${battingTeam}_runs`] = 0;
-//     resetData[`${battingTeam}_wickets`] = 0;
-//     resetData[`${ballingTeam}_runs`] = 0;
-//     resetData[`${ballingTeam}_wickets`] = 0;
-//     update(ref(db, `cricket/${currentTeamSelector.value}`), resetData);
-//     setTimeout(() => {
-//       window.location.reload();
-//     }, 400);
-//   });
-// });
+reset.addEventListener("dblclick", () => {
+  get(child(dbRef, `cricket/${currentTeamSelector.value}`)).then((data) => {
+    const d = data.val();
+    const resetData = {
+      team_a: d[d.batting_team],
+      team_b: d[d.balling_team],
+      balling_team: "team_a",
+      batting_team: "team_b",
+      striker: "",
+      "non-striker": "",
+      baller: "",
+      team_a_over: {
+        0: {
+          0: 0,
+        },
+      },
+      team_a_wickets: 0,
+      team_a_runs: 0,
+      team_b_over: {
+        0: {
+          0: 0,
+        },
+      },
+      team_b_wickets: 0,
+      team_b_runs: 0,
+    };
+    update(ref(db, `cricket/${currentTeamSelector.value}`), resetData);
+    setTimeout(() => {
+      window.location.reload();
+    }, 400);
+  });
+});
