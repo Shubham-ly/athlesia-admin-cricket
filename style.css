@@ -34,10 +34,16 @@ button img {
 select,
 option {
   font-size: 1rem;
+  border-radius: 0.4em;
+  padding: 0.2em 0.4em;
 }
+
 input {
   padding: 0.6em 1em;
+  border: none;
+  outline: none;
   font-size: 1rem;
+  border-radius: 0.4em;
 }
 h1 {
   font-size: 2rem;
@@ -55,11 +61,12 @@ hr {
   border-radius: 100px;
   color: black;
   font-weight: bold;
-  width: 30px;
-  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+
   display: grid;
   place-items: center;
-  padding: 2px;
+  padding: 6px;
   cursor: pointer;
 }
 #overContainer input {
@@ -70,4 +77,8 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+#toWin {
+  font-size: 1.1rem;
+  margin-bottom: 1em;
 }

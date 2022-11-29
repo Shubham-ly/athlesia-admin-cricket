@@ -4,12 +4,13 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Athlesia | Cricket</title>
+    <title>Athlesia | Cricket - Admin</title>
     <script defer type="module" src="/main.js"></script>
     <!-- <script defer type="module" src="/automate.js"></script> -->
   </head>
   <body>
     <h1>Athlesia | Cricket</h1>
+    <span id="toWin"></span>
     <div class="current-team">
       <span>Current Game : </span>
       <select name="currentTeamSelector" id="currentTeamSelector"></select>
@@ -52,7 +53,6 @@
       <div style="display: flex; gap: 1em">
         <button style="flex: 1" id="wideButton">WD</button>
         <button style="flex: 1" id="noBall">NB</button>
-        <button style="flex: 1" id="freeHit">FH</button>
       </div>
       <hr />
       <div style="display: flex; gap: 1em">
@@ -69,19 +69,21 @@
         <div style="display: flex; gap: 1em"></div>
       </template>
       <hr />
-      <div>
-        <label for="striker">Striker: </label
-        ><select id="striker"></select>
-        <br />
+      <div style="display: flex; gap: 1em; align-items: center">
+        <div style="display: flex; flex-direction: column; flex: 1">
+          <label for="striker">Striker: </label
+          ><select id="striker"></select>
+        </div>
         <button id="swapStriker">
           <img
             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1024px' height='1024px' viewBox='0 0 1024 1024' class='icon'%3E%3Cpath d='M847.9 592H152c-4.4 0-8 3.6-8 8v60c0 4.4 3.6 8 8 8h605.2L612.9 851c-4.1 5.2-.4 13 6.3 13h72.5c4.9 0 9.5-2.2 12.6-6.1l168.8-214.1c16.5-21 1.6-51.8-25.2-51.8zM872 356H266.8l144.3-183c4.1-5.2.4-13-6.3-13h-72.5c-4.9 0-9.5 2.2-12.6 6.1L150.9 380.2c-16.5 21-1.6 51.8 25.1 51.8h696c4.4 0 8-3.6 8-8v-60c0-4.4-3.6-8-8-8z'/%3E%3C/svg%3E"
             alt=""
           />
         </button>
-        <br />
-        <label for="non-striker">Non striker: </label
-        ><select id="nonStriker"></select>
+        <div style="display: flex; flex-direction: column; flex: 1">
+          <label for="non-striker">Non striker: </label
+          ><select id="nonStriker"></select>
+        </div>
       </div>
       <hr />
       <label for="ballerSelect">Baller: </label

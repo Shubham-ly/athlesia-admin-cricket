@@ -101,6 +101,12 @@ outButtons.forEach((button) =>
   button.addEventListener("click", onOutButtonClicked)
 );
 wideButton.addEventListener("click", () => {
+  if (
+    !strikerSelector.value ||
+    !nonStrikerSelector.value ||
+    !ballerSeletor.value
+  )
+    return;
   get(child(dbRef, `cricket/${currentTeamSelector.value}`)).then((data) => {
     const d = data.val();
     const battingTeam = d.batting_team;
@@ -128,8 +134,11 @@ ballerSeletor.addEventListener("change", (e) => {
     baller: e.currentTarget.value,
   });
 });
+let wasNoBall = false;
 noBallButton.addEventListener("click", (e) => {
   showFlashMessage("No Ball");
+  wasNoBall = !wasNoBall;
+  e.currentTarget.style.backgroundColor = wasNoBall ? "#999" : "#fff";
 });
 
 const operators = ["+", "-"];
@@ -164,20 +173,23 @@ function updateOvers() {
   const oversData = currentGameData[`${currentGameData.batting_team}_over`];
   if (oversData.length)
     overs.innerHTML = `${oversData.length - 1}.${
-      oversData[oversData.length - 1].length
+      oversData[oversData.length - 1].length - 1
     }`;
-  else overs.innerHTML = "0.1";
+  else overs.innerHTML = "0.0";
 }
 
 function changeStrikerRun(run) {
   const striker = strikerSelector.value;
-  get(child(dbRef, `players/${striker}`)).then((data) => {
-    const d = data.val();
-    const runs = parseInt(d.runs ?? 0) + parseInt(run);
-    update(child(dbRef, `players/${striker}`), {
-      runs,
-    });
-  });
+  console.log("runnig");
+  get(ref(db, `players/${striker}/${currentTeamSelector.value}`)).then(
+    (data) => {
+      const d = data.val();
+      const runs = parseInt(d?.runs ?? 0) + parseInt(run);
+      update(ref(db, `players/${striker}/${currentTeamSelector.value}`), {
+        runs,
+      });
+    }
+  );
 }
 
 function updateWickets() {
@@ -203,6 +215,14 @@ function onSwapTeam() {
       balling_team: d.batting_team,
       batting_team: d.balling_team,
     });
+    gameData[currentTeamSelector.value] = {
+      ...gameData[currentTeamSelector.value],
+      balling_team: d.batting_team,
+      batting_team: d.balling_team,
+      striker: "",
+      "non-striker": "",
+      baller: "",
+    };
     updateBallers(d[d.batting_team]);
     updateBallingTeam(d[d.batting_team]);
     updateBattingTeam(d[d.balling_team]);
@@ -210,17 +230,29 @@ function onSwapTeam() {
     updateRuns(d[`${d.balling_team}_runs`]);
     updateOvers();
     updateWickets();
+    changeOverData(d.balling_team);
+    const targetRun = d[`${d.batting_team}_runs`] + 1;
+    document.querySelector("#toWin").innerHTML = `${
+      d[d.balling_team]
+    } team has to score ${targetRun} runs to win`;
   });
 }
 
 function onBallClicked(e, val = 0) {
+  if (
+    !strikerSelector.value ||
+    !nonStrikerSelector.value ||
+    !ballerSeletor.value
+  )
+    return;
+
   let value = parseFloat((parseFloat(overs.innerHTML) + 0.1).toFixed(1));
   let [overIndex, ballIndex] = value.toString().replace(".", "").split("");
-  if (value % (parseInt(overs.innerHTML) + 0.7) === 0)
+  if (value % (parseInt(overs.innerHTML) + 0.6) === 0)
     value = (value + 0.4).toFixed(1);
   overs.innerHTML = value;
 
-  ballIndex -= 2;
+  ballIndex -= 1;
 
   get(ref(db, `cricket/${currentTeamSelector.value}`)).then((data) => {
     const d = data.val();
@@ -274,19 +306,59 @@ function onBallInputChange(e) {
 }
 
 function onCurrentTeamChange(e) {
+  const currentBattingTeamId = prompt("Enter current batting team");
+
   const data = gameData[currentTeamSelector.value];
-  const currentlyBatting = data[data.batting_team];
-  updateBallingTeam(data[data.balling_team]);
+  const currentlyBatting = currentBattingTeamId;
+  updateBallingTeam(
+    currentlyBatting === data[data.balling_team]
+      ? data[data.batting_team]
+      : data[data.balling_team]
+  );
   updateBattingTeam(currentlyBatting);
   updateBallers(data[data.balling_team]);
   updateStrikers(data[data.batting_team]);
   updateRuns(data[`${data.batting_team}_runs`]);
+  updateWickets();
+  updateOvers();
   const overData = data[`${data.batting_team}_over`];
   const currentOver = overData?.length ? overData.length - 1 : 0;
 
+  const updatedData = {
+    batting_team:
+      currentBattingTeamId === data[data.batting_team]
+        ? data.batting_team
+        : data.balling_team,
+    balling_team:
+      currentBattingTeamId === data[data.batting_team]
+        ? data.balling_team
+        : data.batting_team,
+  };
+  gameData[currentTeamSelector.value] = {
+    ...gameData[currentTeamSelector.value],
+    ...updatedData,
+  };
+
+  update(ref(db, `cricket/${currentTeamSelector.value}`), updatedData);
+
+  currentBallIndex =
+    overData && overData[currentOver].length
+      ? `${currentOver}.${overData[currentOver].length - 1}`
+      : "0.0";
+  update(ref(db, `cricket_update`), {
+    current_game: currentTeamSelector.value,
+  });
+  changeOverData(
+    currentBattingTeamId === data[data.batting_team]
+      ? data.batting_team
+      : data.balling_team
+  );
+}
+
+function changeOverData(batting_team) {
   const overTemplate = document.querySelector("#ballContainer");
   onValue(
-    ref(db, `cricket/${currentTeamSelector.value}/${data.batting_team}_over`),
+    ref(db, `cricket/${currentTeamSelector.value}/${batting_team}_over`),
     (snapshot) => {
       overContainer.innerHTML = "";
       const overData = snapshot.val();
@@ -313,14 +385,6 @@ function onCurrentTeamChange(e) {
       });
     }
   );
-
-  currentBallIndex =
-    overData && overData[currentOver].length
-      ? `${currentOver}.${overData[currentOver].length - 1}`
-      : 0;
-  update(ref(db, `cricket_update`), {
-    current_game: currentTeamSelector.value,
-  });
 }
 
 function updateBallers(balling_team) {
@@ -356,6 +420,12 @@ function updateStrikers(batting_team) {
 }
 
 function onRunButtonClicked(e) {
+  if (
+    !strikerSelector.value ||
+    !nonStrikerSelector.value ||
+    !ballerSeletor.value
+  )
+    return;
   const toInc = e.currentTarget.getAttribute("data-value");
   get(child(dbRef, `cricket/${currentTeamSelector.value}`)).then((data) => {
     const d = data.val();
@@ -367,7 +437,11 @@ function onRunButtonClicked(e) {
     update(ref(db, `cricket/${currentTeamSelector.value}`), updatedRun);
     updateRuns(run);
     changeStrikerRun(toInc);
-    onBallClicked(undefined, parseInt(toInc));
+    onBallClicked(
+      undefined,
+      wasNoBall ? `NB + ${parseInt(toInc)}` : parseInt(toInc)
+    );
+    wasNoBall = false;
     const ball = {};
     ball[currentBallIndex] = parseInt(toInc);
     update(ref(db, `cricket/${currentTeamSelector.value}/balls/`), ball);
@@ -376,6 +450,12 @@ function onRunButtonClicked(e) {
 }
 
 function onOutButtonClicked(e) {
+  if (
+    !strikerSelector.value ||
+    !nonStrikerSelector.value ||
+    !ballerSeletor.value
+  )
+    return;
   get(child(dbRef, `cricket/${currentTeamSelector.value}`)).then((data) => {
     const d = data.val();
     const battingTeam = d.batting_team;
@@ -386,6 +466,7 @@ function onOutButtonClicked(e) {
     update(ref(db, `cricket/${currentTeamSelector.value}`), updatedWicket);
     wickets.innerHTML = wicket;
   });
+  onBallClicked(null, "W");
   showFlashMessage("Out!");
 }
 
@@ -425,8 +506,17 @@ reset.addEventListener("dblclick", () => {
       },
       team_b_wickets: 0,
       team_b_runs: 0,
+      team_a_updates: [],
+      team_b_updates: [],
     };
     update(ref(db, `cricket/${currentTeamSelector.value}`), resetData);
+    Object.values(teams).forEach((team) => {
+      team.forEach((player) => {
+        update(ref(db, `players/${player.id}/${currentTeamSelector.value}`), {
+          runs: 0,
+        });
+      });
+    });
     setTimeout(() => {
       window.location.reload();
     }, 400);
