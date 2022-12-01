@@ -402,6 +402,7 @@ function changeOverData(batting_team) {
       overData?.forEach((over, currentOverIndex) => {
         const o = overTemplate.content.cloneNode({ deep: true });
         over?.forEach((ballData, currentBallIndex) => {
+          if (currentOverIndex === 0 && currentBallIndex === 0) return;
           const ball = document.createElement("span");
           const ballInput = document.createElement("input");
           ball.addEventListener("click", onOverBallClicked);
